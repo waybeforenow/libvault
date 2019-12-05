@@ -8,7 +8,7 @@ LdapStrategy::LdapStrategy(std::string  username, std::string  password)
   , password_(std::move(password))
   {}
 
-std::optional<AuthenticationResponse> LdapStrategy::authenticate(const VaultClient &vaultClient) {
+boost::optional<AuthenticationResponse> LdapStrategy::authenticate(const VaultClient &vaultClient) {
   nlohmann::json j;
   j = nlohmann::json::object();
   j["password"] = password_;
@@ -26,7 +26,7 @@ std::optional<AuthenticationResponse> LdapStrategy::authenticate(const VaultClie
 
     return AuthenticationResponse{body, token};
   } else {
-    return std::nullopt;
+    return boost::none;
   }
 }
 

@@ -14,6 +14,8 @@ else(CURL_FOUND)
     message(FATAL_ERROR "CURL not found")
 endif(CURL_FOUND)
 
+find_package(Boost REQUIRED)
+
 include(GNUInstallDirs)
 include_directories("${CMAKE_SOURCE_DIR}/lib")
 
@@ -39,6 +41,7 @@ set_target_properties(vault PROPERTIES
 
 target_include_directories(vault PRIVATE include)
 target_include_directories(vault PRIVATE src)
+target_include_directories(vault PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(vault curl)
 
 if(UNIX)

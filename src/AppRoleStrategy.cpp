@@ -7,7 +7,7 @@ AppRoleStrategy::AppRoleStrategy(RoleId roleId, SecretId secretId)
   , secretId_(std::move(secretId))
   {}
 
-std::optional<AuthenticationResponse> AppRoleStrategy::authenticate(const VaultClient& client) {
+boost::optional<AuthenticationResponse> AppRoleStrategy::authenticate(const VaultClient& client) {
   nlohmann::json j;
   j = nlohmann::json::object();
   j["role_id"] = roleId_.value();
@@ -26,7 +26,7 @@ std::optional<AuthenticationResponse> AppRoleStrategy::authenticate(const VaultC
 
     return AuthenticationResponse{body, token};
   } else {
-    return std::nullopt;
+    return boost::none;
   }
 }
 

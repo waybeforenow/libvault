@@ -1,12 +1,12 @@
 #include "json.hpp"
 #include "VaultClient.h"
 
-std::optional<std::string>
+boost::optional<std::string>
 VaultHttpConsumer::post(const VaultClient& client,
                         const Url& url,
                         Parameters parameters) {
   if (!client.is_authenticated()) {
-    return std::nullopt;
+    return boost::none;
   }
 
   nlohmann::json j = nlohmann::json::object();
@@ -27,6 +27,6 @@ VaultHttpConsumer::post(const VaultClient& client,
     );
 
   return HttpClient::is_success(response)
-    ? std::optional<std::string>(response.value().body.value())
-    : std::nullopt;
+    ? boost::optional<std::string>(response.value().body.value())
+    : boost::none;
 }

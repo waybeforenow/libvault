@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <curl/curl.h>
 #include <functional>
-#include <optional>
+#include <boost/optional.hpp>
 #include <string>
 #include <utility>
 #include <vector>
@@ -107,18 +107,18 @@ public:
   explicit HttpClient(VaultConfig& config);
   HttpClient(VaultConfig& config, HttpErrorCallback errorCallback);
 
-  [[nodiscard]] std::optional<HttpResponse> get(const Url& url, const Token& token, const Namespace& ns) const;
-  [[nodiscard]] std::optional<HttpResponse> post(const Url& url, const Token& token, const Namespace& ns, std::string value) const;
-  [[nodiscard]] std::optional<HttpResponse> del(const Url& url, const Token& token, const Namespace& ns) const;
-  [[nodiscard]] std::optional<HttpResponse> list(const Url& url, const Token& token, const Namespace& ns) const;
+  [[nodiscard]] boost::optional<HttpResponse> get(const Url& url, const Token& token, const Namespace& ns) const;
+  [[nodiscard]] boost::optional<HttpResponse> post(const Url& url, const Token& token, const Namespace& ns, std::string value) const;
+  [[nodiscard]] boost::optional<HttpResponse> del(const Url& url, const Token& token, const Namespace& ns) const;
+  [[nodiscard]] boost::optional<HttpResponse> list(const Url& url, const Token& token, const Namespace& ns) const;
 
-  static bool is_success(std::optional<HttpResponse> response);
+  static bool is_success(boost::optional<HttpResponse> response);
 private:
   bool debug_;
   bool verify_;
   long connectTimeout_;
   HttpErrorCallback errorCallback_;
-  [[nodiscard]] std::optional<HttpResponse> executeRequest(const Url& url, const Token& token, const Namespace& ns, const CurlSetupCallback& callback) const;
+  [[nodiscard]] boost::optional<HttpResponse> executeRequest(const Url& url, const Token& token, const Namespace& ns, const CurlSetupCallback& callback) const;
 };
 
 class VaultConfig {
@@ -173,7 +173,7 @@ private:
 
 class AuthenticationStrategy {
 public:
-  virtual std::optional<AuthenticationResponse> authenticate(const VaultClient& client) = 0;
+  virtual boost::optional<AuthenticationResponse> authenticate(const VaultClient& client) = 0;
 };
 
 class VaultClient {
@@ -207,12 +207,12 @@ private:
 
 class VaultHttpConsumer {
 public:
-  static std::optional<std::string> post(const VaultClient& client, const Url& url, Parameters parameters);
+  static boost::optional<std::string> post(const VaultClient& client, const Url& url, Parameters parameters);
 };
 
 class Unwrap {
 public:
-  static std::optional<SecretId> unwrap(const VaultClient &client);
+  static boost::optional<SecretId> unwrap(const VaultClient &client);
 
 private:
   static Url getUrl(const VaultClient& client, const Path& path);
@@ -222,7 +222,7 @@ class TokenStrategy : public AuthenticationStrategy {
 public:
   explicit TokenStrategy(Token token) : token_(std::move(token)) {}
 
-  std::optional<AuthenticationResponse> authenticate(const VaultClient& vaultClient) override {
+  boost::optional<AuthenticationResponse> authenticate(const VaultClient& vaultClient) override {
     return AuthenticationResponse{HttpResponseBodyString{""}, token_};
   }
 
@@ -234,7 +234,7 @@ class AppRoleStrategy : public AuthenticationStrategy {
 public:
   AppRoleStrategy(RoleId roleId, SecretId secretId);
 
-  std::optional<AuthenticationResponse> authenticate(const VaultClient& vaultClient) override;
+  boost::optional<AuthenticationResponse> authenticate(const VaultClient& vaultClient) override;
 
 private:
   static Url getUrl(const VaultClient& vaultClient, const Path& path);
@@ -246,7 +246,7 @@ class WrappedSecretAppRoleStrategy : public AuthenticationStrategy {
 public:
   WrappedSecretAppRoleStrategy(RoleId role_id, const Token& token);
 
-  std::optional<AuthenticationResponse> authenticate(const VaultClient& vaultClient) override;
+  boost::optional<AuthenticationResponse> authenticate(const VaultClient& vaultClient) override;
 
 private:
   RoleId roleId_;
@@ -257,7 +257,7 @@ class LdapStrategy : public AuthenticationStrategy {
 public:
   LdapStrategy(std::string  username, std::string  password);
 
-  std::optional<AuthenticationResponse> authenticate(const VaultClient& vaultClient) override;
+  boost::optional<AuthenticationResponse> authenticate(const VaultClient& vaultClient) override;
 
 private:
   static Url getUrl(const VaultClient& client, const Path& username);
@@ -275,12 +275,12 @@ public:
   KeyValue(const VaultClient& client, KeyValue::Version version);
   KeyValue(const VaultClient& client, SecretMount mount, KeyValue::Version version);
 
-  std::optional<std::string> list(const Path& path);
-  std::optional<std::string> get(const Path& path);
-  std::optional<std::string> put(const Path& path, Parameters parameters);
-  std::optional<std::string> del(const Path& path);
-  std::optional<std::string> del(const Path& path, std::vector<long> versions);
-  std::optional<std::string> destroy(const Path& path, std::vector<long> versions);
+  boost::optional<std::string> list(const Path& path);
+  boost::optional<std::string> get(const Path& path);
+  boost::optional<std::string> put(const Path& path, Parameters parameters);
+  boost::optional<std::string> del(const Path& path);
+  boost::optional<std::string> del(const Path& path, std::vector<long> versions);
+  boost::optional<std::string> destroy(const Path& path, std::vector<long> versions);
 
 private:
   Url getUrl(const Path& path);
@@ -295,15 +295,15 @@ class Transit {
 public:
   explicit Transit(const VaultClient& client);
 
-  std::optional<std::string> encrypt(const Path& path, const Parameters& parameters);
-  std::optional<std::string> decrypt(const Path& path, const Parameters& parameters);
-  std::optional<std::string> generate_data_key(const Path& path, const Parameters& parameters);
-  std::optional<std::string> generate_wrapped_data_key(const Path& path, const Parameters& parameters);
-  std::optional<std::string> generate_random_bytes(int num_bytes, const Parameters& parameters);
-  std::optional<std::string> hash(const Algorithm& algorithm, const Parameters& parameters);
-  std::optional<std::string> hmac(const Path& key, const Algorithm& algorithm, const Parameters& Parameters);
-  std::optional<std::string> sign(const Path& key, const Algorithm& algorithm, const Parameters& Parameters);
-  std::optional<std::string> verify(const Path& key, const Algorithm& algorithm, const Parameters& Parameters);
+  boost::optional<std::string> encrypt(const Path& path, const Parameters& parameters);
+  boost::optional<std::string> decrypt(const Path& path, const Parameters& parameters);
+  boost::optional<std::string> generate_data_key(const Path& path, const Parameters& parameters);
+  boost::optional<std::string> generate_wrapped_data_key(const Path& path, const Parameters& parameters);
+  boost::optional<std::string> generate_random_bytes(int num_bytes, const Parameters& parameters);
+  boost::optional<std::string> hash(const Algorithm& algorithm, const Parameters& parameters);
+  boost::optional<std::string> hmac(const Path& key, const Algorithm& algorithm, const Parameters& Parameters);
+  boost::optional<std::string> sign(const Path& key, const Algorithm& algorithm, const Parameters& Parameters);
+  boost::optional<std::string> verify(const Path& key, const Algorithm& algorithm, const Parameters& Parameters);
 
 private:
   Url getUrl(const Path& path);

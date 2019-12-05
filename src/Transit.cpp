@@ -9,7 +9,7 @@ Url Transit::getUrl(const Path& path) {
   return client_.getUrl("/v1/transit/", path);
 }
 
-std::optional<std::string> Transit::encrypt(const Path& path, const Parameters& parameters) {
+boost::optional<std::string> Transit::encrypt(const Path& path, const Parameters& parameters) {
   return VaultHttpConsumer::post(
     client_,
     getUrl(Path{"encrypt/" + path}),
@@ -17,7 +17,7 @@ std::optional<std::string> Transit::encrypt(const Path& path, const Parameters& 
   );
 }
 
-std::optional<std::string> Transit::decrypt(const Path& path, const Parameters& parameters) {
+boost::optional<std::string> Transit::decrypt(const Path& path, const Parameters& parameters) {
   auto response = VaultHttpConsumer::post(
     client_,
     getUrl(Path{"decrypt/" + path}),
@@ -26,13 +26,13 @@ std::optional<std::string> Transit::decrypt(const Path& path, const Parameters& 
 
   if (response) {
     auto encoded_text = nlohmann::json::parse(response.value())["data"]["plaintext"];
-    return std::optional<std::string>(Base64::decode(encoded_text));
+    return boost::optional<std::string>(Base64::decode(encoded_text));
   } else {
-    return std::nullopt;
+    return boost::none;
   }
 }
 
-std::optional<std::string> Transit::generate_data_key(const Path& path, const Parameters& parameters) {
+boost::optional<std::string> Transit::generate_data_key(const Path& path, const Parameters& parameters) {
   return VaultHttpConsumer::post(
     client_,
     getUrl(Path{"datakey/plaintext/" + path}),
@@ -40,7 +40,7 @@ std::optional<std::string> Transit::generate_data_key(const Path& path, const Pa
   );
 }
 
-std::optional<std::string> Transit::generate_wrapped_data_key(const Path& path, const Parameters& parameters) {
+boost::optional<std::string> Transit::generate_wrapped_data_key(const Path& path, const Parameters& parameters) {
   return VaultHttpConsumer::post(
     client_,
     getUrl(Path{"datakey/wrapped/" + path}),
@@ -48,7 +48,7 @@ std::optional<std::string> Transit::generate_wrapped_data_key(const Path& path, 
   );
 }
 
-std::optional<std::string> Transit::generate_random_bytes(int num_bytes, const Parameters& parameters) {
+boost::optional<std::string> Transit::generate_random_bytes(int num_bytes, const Parameters& parameters) {
   return VaultHttpConsumer::post(
     client_,
     getUrl(Path{"random/" + std::to_string(num_bytes)}),
@@ -56,7 +56,7 @@ std::optional<std::string> Transit::generate_random_bytes(int num_bytes, const P
   );
 }
 
-std::optional<std::string> Transit::hash(const Algorithm& algorithm, const Parameters& parameters) {
+boost::optional<std::string> Transit::hash(const Algorithm& algorithm, const Parameters& parameters) {
   return VaultHttpConsumer::post(
     client_,
     getUrl(Path{"hash/" + algorithm}),
@@ -64,7 +64,7 @@ std::optional<std::string> Transit::hash(const Algorithm& algorithm, const Param
   );
 }
 
-std::optional<std::string> Transit::hmac(const Path& key,
+boost::optional<std::string> Transit::hmac(const Path& key,
                                     const Algorithm& algorithm,
                                     const Parameters& parameters) {
   return VaultHttpConsumer::post(
@@ -74,7 +74,7 @@ std::optional<std::string> Transit::hmac(const Path& key,
   );
 }
 
-std::optional<std::string> Transit::sign(const Path& key,
+boost::optional<std::string> Transit::sign(const Path& key,
                                     const Algorithm& algorithm,
                                     const Parameters& parameters) {
   return VaultHttpConsumer::post(
@@ -84,7 +84,7 @@ std::optional<std::string> Transit::sign(const Path& key,
   );
 }
 
-std::optional<std::string> Transit::verify(const Path& key,
+boost::optional<std::string> Transit::verify(const Path& key,
                                       const Algorithm& algorithm,
                                       const Parameters& parameters) {
   return VaultHttpConsumer::post(
